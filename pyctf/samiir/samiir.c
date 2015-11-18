@@ -16,14 +16,14 @@ typedef struct {
 #define FILTER_TYPE_IIR 1
 #define FILTER_TYPE_FFT 2
 
-static void free_filter(void *filter)
+static void free_filter(PyObject *handle)
 {
-    FILTER *f = (FILTER *)filter;
+    FILTER *f = (FILTER *)PyCapsule_GetPointer(handle, NULL);
 
     if (f->type == FILTER_TYPE_FFT) {
 	free(f->gain);
     }
-    free(filter);
+    free(f);
 }
 
 static char Doc_mkiir[] =
@@ -100,7 +100,7 @@ static PyObject *mkiir_wrap(PyObject *self, PyObject *args)
 	return NULL;
     }
 
-    o = PyCObject_FromVoidPtr(handle, free_filter);
+    o = PyCapsule_New(handle, NULL, free_filter);
     return o;
 }
 
@@ -146,7 +146,7 @@ static PyObject *mkfft_wrap(PyObject *self, PyObject *args)
     }
     Butterworth(handle->gain, len, lo, hi, srate, type, MAXORDER, &bwfreq);
 
-    o = PyCObject_FromVoidPtr(handle, free_filter);
+    o = PyCapsule_New(handle, NULL, free_filter);
     return o;
 }
 
@@ -167,11 +167,11 @@ static PyObject *dofilt_wrap(PyObject *self, PyObject *args)
 	return NULL;
     }
 
-    if (!PyCObject_Check(fo)) {
+    if (!PyCapsule_CheckExact(fo)) {
 	PyErr_SetString(PyExc_TypeError, "second argument must be a filter object");
 	return NULL;
     }
-    handle = (FILTER *)PyCObject_AsVoidPtr(fo);
+    handle = (FILTER *)PyCapsule_GetPointer(fo, NULL);
 
     a = (PyArrayObject *)PyArray_ContiguousFromAny(ao, NPY_DOUBLE, 1, 1);
     if (a == NULL) {
@@ -221,11 +221,11 @@ static PyObject *getiir_wrap(PyObject *self, PyObject *args)
     }
 
     errs = "argument must be a filter object from mkiir()";
-    if (!PyCObject_Check(fo)) {
+    if (!PyCapsule_CheckExact(fo)) {
 	PyErr_SetString(PyExc_TypeError, errs);
 	return NULL;
     }
-    handle = (FILTER *)PyCObject_AsVoidPtr(fo);
+    handle = (FILTER *)PyCapsule_GetPointer(fo, NULL);
     if (handle->type != FILTER_TYPE_IIR) {
 	PyErr_SetString(PyExc_TypeError, errs);
 	return NULL;
@@ -281,11 +281,11 @@ static PyObject *getfft_wrap(PyObject *self, PyObject *args)
     }
 
     errs = "argument must be a filter object from mkfft()";
-    if (!PyCObject_Check(fo)) {
+    if (!PyCapsule_CheckExact(fo)) {
 	PyErr_SetString(PyExc_TypeError, errs);
 	return NULL;
     }
-    handle = (FILTER *)PyCObject_AsVoidPtr(fo);
+    handle = (FILTER *)PyCapsule_GetPointer(fo, NULL);
     if (handle->type != FILTER_TYPE_FFT) {
 	PyErr_SetString(PyExc_TypeError, errs);
 	return NULL;
@@ -321,8 +321,15 @@ static PyMethodDef Methods[] = {
     { NULL, NULL, 0, NULL }
 };
 
-void initsamiir()
+static struct PyModuleDef samiirmodule = {
+   PyModuleDef_HEAD_INIT, "samiir", NULL, -1, Methods
+};
+
+PyMODINIT_FUNC PyInit_samiir(void)
 {
-    Py_InitModule("samiir", Methods);
+    PyObject *o;
+
+    o = PyModule_Create(&samiirmodule);
     import_array();
+    return o;
 }

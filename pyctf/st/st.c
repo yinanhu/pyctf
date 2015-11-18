@@ -695,8 +695,15 @@ static PyMethodDef Methods[] = {
 	{ NULL, NULL, 0, NULL }
 };
 
-void initst()
+static struct PyModuleDef stmodule = {
+   PyModuleDef_HEAD_INIT, "st", NULL, -1, Methods
+};
+
+PyMODINIT_FUNC PyInit_st(void)
 {
-	Py_InitModule("st", Methods);
-	import_array();
+    PyObject *o;
+
+    o = PyModule_Create(&stmodule);
+    import_array();
+    return o;
 }

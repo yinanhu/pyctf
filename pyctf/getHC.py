@@ -18,7 +18,7 @@ def getHC(filename, frame):
     """
 
     if frame != 'head' and frame != 'dewar':
-	raise Exception, "bad frame value"
+        raise ValueError("bad frame value")
 
     nasion = re.compile('measured nasion .* %s' % frame)
     left = re.compile('measured left .* %s' % frame)
@@ -28,12 +28,12 @@ def getHC(filename, frame):
 
     x = open(filename).xreadlines()
     for s in x:
-	if nasion.match(s):
-	    n = coord(x)
-	elif left.match(s):
-	    l = coord(x)
-	elif right.match(s):
-	    r = coord(x)
+        if nasion.match(s):
+            n = coord(x)
+        elif left.match(s):
+            l = coord(x)
+        elif right.match(s):
+            r = coord(x)
 
     return n, l, r
 
@@ -41,13 +41,13 @@ if __name__ == '__main__':
     import sys
 
     def length(d):
-	return hypot.reduce(d)
+        return hypot.reduce(d)
 
     n, l, r = getHC(sys.argv[1], 'dewar')
 
-    print 'nasion: %.3f %.3f %.3f' % tuple(n)
-    print 'left ear: %.3f %.3f %.3f' % tuple(l)
-    print 'right ear: %.3f %.3f %.3f' % tuple(r)
-    print 'left - right: %.3f cm' % length(l - r)
-    print 'nasion - left: %.3f cm' % length(n - l)
-    print 'nasion - right: %.3f cm' % length(n - r)
+    print('nasion: %.3f %.3f %.3f' % tuple(n))
+    print('left ear: %.3f %.3f %.3f' % tuple(l))
+    print('right ear: %.3f %.3f %.3f' % tuple(r))
+    print('left - right: %.3f cm' % length(l - r))
+    print('nasion - left: %.3f cm' % length(n - l))
+    print('nasion - right: %.3f cm' % length(n - r))

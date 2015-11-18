@@ -3,9 +3,9 @@ from subprocess import Popen, PIPE
 
 # This sed script pre-parses the marker file and makes things a little easier.
 
-_sedscript = r"""/:/{
+_sedscript = b"""/:/{
 N
-s/\n/ /
+s/\\n/ /
 }
 /^$/d
 """
@@ -21,7 +21,7 @@ class markers:
     #    self.marks[key] = value
 
     def has_key(self, key):
-        return self.marks.has_key(key)
+        return self.marks.get(key)
 
     def keys(self):
         return self.marks.keys()
@@ -53,6 +53,7 @@ class markers:
         state = START
 
         for l in f:
+            l = l.decode("utf-8")
             s = l.split(':')
             if state == START:
                 if s[0] == 'CLASSGROUPID':
@@ -64,7 +65,7 @@ class markers:
             elif state == NUM:
                 if s[0] == 'NUMBER OF SAMPLES':
                     num = int(s[1])
-                    f.next()
+                    f.readline()
                     self._get_samples(f, name, num)
                     state = START
         pr.close()
@@ -73,9 +74,9 @@ class markers:
     def _get_samples(self, f, name, num):
         "Add all the samples for a marker to the marks dict."
         for x in range(num):
-            l = f.next().split()
+            l = f.readline().split()
             trial = int(l[0])
             t = float(l[1])
-            if not self.marks.has_key(name):
+            if not self.marks.get(name):
                 self.marks[name] = []
             self.marks[name].append((trial, t))

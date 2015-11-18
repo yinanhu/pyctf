@@ -4,7 +4,7 @@ import numpy as np
 def readcov(covfile):
     """readcov(file) returns the covariance matrix found in the given .cov file."""
 
-    cov = open(covfile)
+    cov = open(covfile, 'rb')
 
     # Read the header.
 
@@ -13,7 +13,7 @@ def readcov(covfile):
     l = struct.unpack(fmt, head)
 
     if l[0] != 'SAMCOVAR' or l[1] != 3:
-	raise Exception, "%s is not a valid covariance file" % covfile
+        raise IOError("%s is not a valid covariance file" % covfile)
 
     N = l[4]
 

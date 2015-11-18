@@ -70,11 +70,11 @@ def coord(f):
 
 # HDM
 def coord2(s):
-    return array(map(int, s.split()[-3:])) * .1
+    return array(list(map(int, s.split()[-3:]))) * .1
 
 # BRIK
 def coord3(s):
-    x = array(map(fuzz, tl)[0:3]) * .1
+    x = array(list(map(fuzz, tl)[0:3])) * .1
     # convert from RAI to PRI
     return array((-x[1], x[0], x[2]))
 
@@ -142,12 +142,12 @@ elif type == BRIK:
 def length(d):
     return hypot.reduce(d)
 
-print 'nasion: %.3f %.3f %.3f' % tuple(n)
-print 'left ear: %.3f %.3f %.3f' % tuple(l)
-print 'right ear: %.3f %.3f %.3f' % tuple(r)
-print 'left - right: %.3f cm' % length(l - r)
-print 'nasion - left: %.3f cm' % length(n - l)
-print 'nasion - right: %.3f cm' % length(n - r)
+print('nasion: %.3f %.3f %.3f' % tuple(n))
+print('left ear: %.3f %.3f %.3f' % tuple(l))
+print('right ear: %.3f %.3f %.3f' % tuple(r))
+print('left - right: %.3f cm' % length(l - r))
+print('nasion - left: %.3f cm' % length(n - l))
+print('nasion - right: %.3f cm' % length(n - r))
 
 if l[1] < 0:
     msg("Warning: left / right flip detected.\n")

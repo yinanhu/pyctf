@@ -211,8 +211,15 @@ static PyMethodDef Methods[] = {
 	{ NULL, NULL, 0, NULL }
 };
 
-void init_fieldspline()
+static struct PyModuleDef _fieldsplinemodule = {
+   PyModuleDef_HEAD_INIT, "_fieldspline", NULL, -1, Methods
+};
+
+PyMODINIT_FUNC PyInit__fieldspline(void)
 {
-	Py_InitModule("_fieldspline", Methods);
-	import_array();
+    PyObject *o;
+
+    o = PyModule_Create(&_fieldsplinemodule);
+    import_array();
+    return o;
 }
