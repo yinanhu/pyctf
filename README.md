@@ -1,2 +1,2 @@
 # pyctf
-Python access to CTF format MEG data.
+Python access to CTF format MEG data

@@ -1,0 +1,11 @@
+*~
+*.o
+*.pyc
+*.a
+*.so
+*.bak
+*.hdf5
+*.npy
+bin/
+lib/
+*_pb2.py
