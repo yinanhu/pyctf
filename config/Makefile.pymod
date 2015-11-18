@@ -1,0 +1,15 @@
+# Set these env vars and $(MAKE) -f Makefile.pymod
+
+# PYMODNAME = <module name>
+# PYMODCFLAGS = <-I args>
+# PYMODLIBS = <link args>
+
+py = $(shell sh -c 'dirname `locate Python.h | grep python2 | head -1`')
+npy = $(shell python2 -c 'import numpy; print(numpy.__path__[0] + "/core/include/numpy")')
+
+CFLAGS = -O2 -I$(py) -I$(npy) -fPIC $(PYMODCFLAGS) -DNPY_NO_DEPRECATED_API=NPY_API_VERSION
+
+all: $(PYMODNAME).so
+
+$(PYMODNAME).so: $(PYMODNAME).o $(PYMODLIBS)
+	$(CC) $(PYMODCFLAGS) -shared -o $@ $(PYMODNAME).o $(PYMODLIBS)
