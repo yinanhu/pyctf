@@ -1,5 +1,7 @@
 #! /usr/bin/env python
 
+from __future__ import print_function
+
 import sys, os, tempfile
 from pylab import *
 import pyctf
@@ -209,7 +211,7 @@ T1 = ds.getTimePt(nsamples - 1)
 if t0 is None:
         t0 = T0
         t1 = T1
-        print "Default time window is %g to %g" % (t0, t1)
+        print("Default time window is %g to %g" % (t0, t1))
         mlist = []
         seglen = nsamples
 else:
@@ -279,7 +281,7 @@ for tr, t in tlist:
                 D = ds.getIdxArray(tr, idx)
                 D *= 1e15 # convert from tesla to femtotesla
                 last_tr = tr
-                print 'trial %d' % tr
+                print('trial %d' % tr)
                 if pflag:
                         for ch in range(nch):
                                 D[ch, :] = dofilt(D[ch], lineFilt)
@@ -288,7 +290,7 @@ for tr, t in tlist:
                 d = D[ch][samp : samp + seglen]
                 if aflag:
                         if verbose:
-                                print ds.getChannelName(idx[ch]),
+                                print(ds.getChannelName(idx[ch]), end = ' ', flush = True)
                         if K == 0:
                                 s += abs(st(d, freq(lo), freq(hi)))**2
                         else:
@@ -297,8 +299,8 @@ for tr, t in tlist:
                         s[ch] += d
                 n += 1
         if aflag and verbose:
-                print
-                print n
+                print()
+                print(n)
 
 r = 0.
 if ref:
@@ -313,7 +315,7 @@ if ref:
 if n == 0:
         printerror("no valid trials!")
         sys.exit(1)
-print '%d total epochs, avg. %g per channel' % (n, float(n) / nch)
+print('%d total epochs, avg. %g per channel' % (n, float(n) / nch))
 
 r /= n
 if aflag:
@@ -322,16 +324,16 @@ else:
         d = 0.
         for ch in range(nch):
                 if verbose:
-                        print ds.getChannelName(idx[ch]),
+                        print(ds.getChannelName(idx[ch]), end = ' ', flush = True)
                 if K == 0:
                         d += abs(st(s[ch] / n, freq(lo), freq(hi)))**2
                 else:
                         d += mtst(K, tapers, s[ch] / n, freq(lo), freq(hi))
         if verbose:
-                print
+                print()
         s = d / nch
 
-print 'bw =', calcbw(K, seglen, srate)
+print('bw =', calcbw(K, seglen, srate))
 
 def writebrik(s, prefix):
         "Write 2D TF data as an AFNI BRIK."
