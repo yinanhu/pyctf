@@ -8,7 +8,6 @@ import pyctf
 from pyctf.util import *
 from pyctf.st.smt import calc_tapers, calcbw, mtst
 from pyctf.st import st
-from pyctf.samiir import mkfft, mkiir, dofilt
 #from numpy import cov
 
 usage("""[options] -c channel ... [dataset]
@@ -61,8 +60,6 @@ Options are:
         -n              Don't apply the viewing filter parameters.
                         This is the default. There is no alternative.
 
-        -p              Apply the viewing filter parameters. Currently only notches 60 Hz.
-
         -l              Plot the log of the power.
 
         -B "t0 t1"      Normalize by the average across the specified baseline
@@ -89,7 +86,7 @@ Options are:
 
 This is StockwellDs.py version 2.1""")
 
-optlist, args = parseargs("m:t:b:ak:c:npo:lr:T:d:B:Nv", ["mat="])
+optlist, args = parseargs("m:t:b:ak:c:no:lr:T:d:B:Nv", ["mat="])
 
 dsname = None
 mlist = []
@@ -102,7 +99,6 @@ lo = 0
 hi = 80
 K = 0
 nflag = False
-pflag = False
 aflag = False
 prefix = None
 lflag = False
@@ -156,8 +152,6 @@ for opt, arg in optlist:
                 trlist.extend(arg.split())
         elif opt == '-n':
                 nflag = True
-        elif opt == '-p':
-                pflag = True
         elif opt == '-a':
                 aflag = True
         elif opt == '-l':
@@ -234,7 +228,7 @@ for marker in mlist:
 
 if len(mlist) == 0:
         # if no marks, use the start of each trial
-        tlist = zip(range(ntrials), [0]*ntrials)
+        tlist = list(zip(range(ntrials), [0]*ntrials))
 else:
         tlist = []
         for marker in mlist:
@@ -243,10 +237,10 @@ else:
 # Filter out unwanted trials.
 
 if len(trlist) > 0:
-        trlist = map(int, trlist)
+        trlist = list(map(int, trlist))
         def intr(t, tr = trlist):
                 return t[0] in tr
-        tlist = filter(intr, tlist)
+        tlist = list(filter(intr, tlist))
 
 if len(tlist) == 0:
         printerror("no valid trials!")
@@ -268,11 +262,6 @@ m = 1
 if K > 0:
         tapers = calc_tapers(K, seglen)
 
-# Optionally notch filter the data. @@@ Should really apply all processing parameters.
-
-if pflag:
-        lineFilt = mkfft(61., 59., srate, nsamples)
-
 last_tr = None
 for tr, t in tlist:
         if t + t0 < T0 or t + t1 > T1:
@@ -282,15 +271,12 @@ for tr, t in tlist:
                 D *= 1e15 # convert from tesla to femtotesla
                 last_tr = tr
                 print('trial %d' % tr)
-                if pflag:
-                        for ch in range(nch):
-                                D[ch, :] = dofilt(D[ch], lineFilt)
         samp = ds.getSampleNo(t + t0)
         for ch in range(nch):
                 d = D[ch][samp : samp + seglen]
                 if aflag:
                         if verbose:
-                                print(ds.getChannelName(idx[ch]), end = ' ', flush = True)
+                                print(ds.getChannelName(idx[ch]), end = ' ')
                         if K == 0:
                                 s += abs(st(d, freq(lo), freq(hi)))**2
                         else:
@@ -324,7 +310,7 @@ else:
         d = 0.
         for ch in range(nch):
                 if verbose:
-                        print(ds.getChannelName(idx[ch]), end = ' ', flush = True)
+                        print(ds.getChannelName(idx[ch]), end = ' ')
                 if K == 0:
                         d += abs(st(s[ch] / n, freq(lo), freq(hi)))**2
                 else:

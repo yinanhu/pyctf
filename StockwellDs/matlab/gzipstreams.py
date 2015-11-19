@@ -122,9 +122,9 @@ class GzipInputStream(object):
         elif whence == 1:
             position = self.unzipped_pos + offset
         else:
-            raise IOError, "Illegal argument"
+            raise IOError("Illegal argument")
         if position < self.unzipped_pos:
-            raise IOError, "Cannot seek backwards"
+            raise IOError("Cannot seek backwards")
 
         # skip forward, in blocks
         while position > self.unzipped_pos:
