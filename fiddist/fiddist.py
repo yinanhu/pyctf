@@ -57,15 +57,14 @@ if type == BRIK:
 else:
     x = open(filename)
 
-def get_coord(f):
-    l = f.next()
+# HC
+def get_coord(l):
     return float(l.split()[2])
 
-# HC
-def coord(f):
-    x = get_coord(f)
-    y = get_coord(f)
-    z = get_coord(f)
+def coord(l, i):
+    x = get_coord(l[i])
+    y = get_coord(l[i+1])
+    z = get_coord(l[i+2])
     return array((x, y, z))
 
 # HDM
@@ -88,13 +87,20 @@ if type == HC:
     left = re.compile('measured left .* head')
     right = re.compile('measured right .* head')
 
-    for s in x:
+    ll = x.readlines()
+    i = 0
+    while i < len(ll):
+        s = ll[i]
+        i += 1
         if nasion.match(s):
-            n = coord(x)
+            n = coord(ll, i)
+            i += 3
         elif left.match(s):
-            l = coord(x)
+            l = coord(ll, i)
+            i += 3
         elif right.match(s):
-            r = coord(x)
+            r = coord(ll, i)
+            i += 3
 
 elif type == HDM:
     nasion = re.compile('.*NASION:')

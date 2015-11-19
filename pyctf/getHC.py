@@ -1,14 +1,13 @@
 import re
 from numpy import array, hypot
 
-def get_coord(f):
-    l = f.next()
+def get_coord(l):
     return float(l.split()[2])
 
-def coord(f):
-    x = get_coord(f)
-    y = get_coord(f)
-    z = get_coord(f)
+def coord(l, i):
+    x = get_coord(l[i])
+    y = get_coord(l[i+1])
+    z = get_coord(l[i+2])
     return array((x, y, z))
 
 def getHC(filename, frame):
@@ -26,14 +25,20 @@ def getHC(filename, frame):
 
     n, l, r = None, None, None
 
-    x = open(filename).xreadlines()
-    for s in x:
+    ll = open(filename).readlines()
+    i = 0
+    while i < len(ll):
+        s = ll[i]
+        i += 1
         if nasion.match(s):
-            n = coord(x)
+            n = coord(ll, i)
+            i += 3
         elif left.match(s):
-            l = coord(x)
+            l = coord(ll, i)
+            i += 3
         elif right.match(s):
-            r = coord(x)
+            r = coord(ll, i)
+            i += 3
 
     return n, l, r
 

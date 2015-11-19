@@ -11,7 +11,7 @@ def afni_open(filename, which):
                 try:
                         f = open("%s+orig.%s" % (name, which))
                 except IOError:
-                        print(file = sys.stderr, "can't open %s" % filename)
+                        print("can't open %s" % filename, file = sys.stderr)
                         sys.exit(1)
         return f
 

@@ -6,6 +6,5 @@ install: all
 	@mkdir -p $(BINDIR)
 	cp fiddist.py $(BINDIR)
 
-clean:
-	rm -f *~ *.pyc *.o *.a *.so
+clean: clean-x
 
