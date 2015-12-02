@@ -1,11 +1,10 @@
 #! /usr/bin/python
 
-import os
+import os, sys
 from pyctf import dsopen
 from pyctf import ctf
 
-dsname = "IHDYYTDX_covert_20151001_04.ds"
-
+dsname = sys.argv[1]
 ds = dsopen(dsname)
 
 srate = ds.getSampleRate()
